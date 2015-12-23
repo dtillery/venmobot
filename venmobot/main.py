@@ -11,6 +11,7 @@ import tornado.autoreload
 from tornado.options import define, options
 
 from handlers.ping_handler import PingHandler
+from handlers.transaction_handler import TransactionHandler
 
 define("port", default=9001, help="Port for the application to listen on.")
 define("debug", default=False, help="Enable debug mode (logging, autoreload, etc...)")
@@ -20,7 +21,8 @@ class Application(tornado.web.Application):
 
     def __init__(self):
         routes = [
-            (r"/ping", PingHandler)
+            (r"/ping", PingHandler),
+            (r"/transactions", TransactionHandler)
         ]
         tornado.web.Application.__init__(self, routes)
 
