@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 import json
 
 from tornado.web import HTTPError, RequestHandler
