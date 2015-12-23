@@ -1,1 +1,1 @@
-web: python venmobot/main.py --port=$PORT
+web: python venmobot/main.py --port=$PORT --slack-cmd-token=$SLACK_CMD_TOKEN

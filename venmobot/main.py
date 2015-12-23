@@ -15,6 +15,7 @@ from handlers.transaction_handler import TransactionHandler
 
 define("port", default=9001, help="Port for the application to listen on.")
 define("debug", default=False, help="Enable debug mode (logging, autoreload, etc...)")
+define("slack-cmd-token", default="", help="Token to authenticate the Slash Command from Slack.")
 
 
 class Application(tornado.web.Application):
