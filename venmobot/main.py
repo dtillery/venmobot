@@ -3,6 +3,7 @@ import sys
 
 import tornado.ioloop
 import tornado.web
+import tornado.httpserver
 import tornado.autoreload
 from tornado.options import define, options
 
@@ -29,7 +30,8 @@ if __name__ == '__main__':
     tornado.options.parse_command_line()
 
     app = Application()
-    app.listen(options.port)
+    http_server = tornado.httpserver.HTTPServer(app)
+    http_server.listen(options.port)
     if options.debug:
         tornado.autoreload.start()
 
