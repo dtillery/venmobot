@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import requests
+import time
 
 from tornado.web import HTTPError, RequestHandler
 
@@ -24,3 +26,18 @@ class TransactionHandler(RequestHandler):
         logging.info("From User: %s" % self.arguments.get("user_name"))
         logging.info("In channel: %s" % self.arguments.get("channel_name"))
         logging.info("With text: %s" % self.arguments.get("text"))
+        logging.info(self.arguments)
+
+        # 1. Get target phone number from DB
+        # If user not in DB, query slack and update
+        logging.info("Testing delayed responses")
+        time.sleep(3)
+        logging.info("3 seconds passed.")
+        time.sleep(3)
+        logging.info("6 seconds passed.")
+        response_url = self.arguments.get("response_url")
+        response_data = {
+            "response_type": "in_channel",
+            "text": "Responding back to %s!" % self.arguments.get("user_name")
+        }
+        requests.post(response_url, data=response_data)
