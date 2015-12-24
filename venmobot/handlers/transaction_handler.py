@@ -40,4 +40,5 @@ class TransactionHandler(RequestHandler):
             "response_type": "in_channel",
             "text": "Responding back to %s!" % self.arguments.get("user_name")
         }
-        requests.post(response_url, data=response_data)
+        r = requests.post(response_url, data=response_data)
+        logging.info("%i: %s" % (r.status_code, r.content))
