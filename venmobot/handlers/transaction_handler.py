@@ -38,8 +38,8 @@ class TransactionHandler(RequestHandler):
         response_url = self.arguments.get("response_url")
         response_data = {
             "response_type": "in_channel",
-            "text": "Responding back to %s!" % self.arguments.get("user_name")
+            "text": "Responding back to %s re:%s!" % (self.arguments.get("user_name", self.arguments.text))
         }
         logging.info("Sending response to %s" % response_url)
-        r = requests.post(response_url, data=response_data)
+        r = requests.post(response_url, json=response_data)
         logging.info("%i: %s" % (r.status_code, r.content))
