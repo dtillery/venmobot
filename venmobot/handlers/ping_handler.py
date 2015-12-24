@@ -12,5 +12,4 @@ class PingHandler(RequestHandler):
         ping_info = {
             "running": True
         }
-
         self.write(json.dumps(ping_info))
