@@ -34,7 +34,9 @@ class TransactionHandler(RequestHandler):
         return_info = {
             "text": "Thanks using venmobot, I'll get right on that!",
             "attachments": [
-                "text": "You want to: %s" % self.arguments.get("text")
+                {
+                    "text": "You want to: %s" % self.arguments.get("text")
+                }
             ]
         }
         self.write(json.dumps(return_info))
