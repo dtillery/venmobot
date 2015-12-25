@@ -39,4 +39,4 @@ class TransactionHandler(RequestHandler):
                 }
             ]
         }
-        self.write(json.dumps(return_info))
+        self.write(return_info)
