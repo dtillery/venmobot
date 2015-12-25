@@ -7,7 +7,7 @@ import time
 
 from tornado.web import HTTPError, RequestHandler
 
-from auth import slack_token_authenticated
+from venmobot.auth import slack_token_authenticated
 
 
 class TransactionHandler(RequestHandler):
