@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import json
 import requests
 import time
 
@@ -29,4 +30,11 @@ class TransactionHandler(RequestHandler):
         logging.info("With text: %s" % self.arguments.get("text"))
 
         venmobot.tasks.test.delay()
-        return
+
+        return_info = {
+            "text": "Thanks using venmobot, I'll get right on that!"
+            "attachments": [
+                "text": "You want to: %s" % self.arguments.get("text")
+            ]
+        }
+        self.write(json.dumps(return_info))
