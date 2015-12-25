@@ -32,7 +32,7 @@ class TransactionHandler(RequestHandler):
         venmobot.tasks.test.delay()
 
         return_info = {
-            "text": "Thanks using venmobot, I'll get right on that!"
+            "text": "Thanks using venmobot, I'll get right on that!",
             "attachments": [
                 "text": "You want to: %s" % self.arguments.get("text")
             ]
