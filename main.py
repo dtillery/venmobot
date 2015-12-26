@@ -25,6 +25,9 @@ class Application(tornado.web.Application):
             (r"/ping", PingHandler),
             (r"/transactions", TransactionHandler)
         ]
+
+        #TODO: somehow ping celery worker so it comes back up at same time?
+
         tornado.web.Application.__init__(self, routes)
 
 
