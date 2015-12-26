@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from venmobot.handlers import BaseHandler
 
-import json
 
-from tornado.web import HTTPError, RequestHandler
-
-class PingHandler(RequestHandler):
+class PingHandler(BaseHandler):
 
     def get(self):
         ping_info = {

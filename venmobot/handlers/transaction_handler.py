@@ -5,21 +5,12 @@ import logging
 import requests
 import time
 
-from tornado.web import HTTPError, RequestHandler
-
 from venmobot.auth import slack_token_authenticated
+from venmobot.handlers import BaseHandler
 import venmobot.tasks
 
 
-class TransactionHandler(RequestHandler):
-
-    @property
-    def arguments(self):
-        if not hasattr(self, "_arguments"):
-            self._arguments = {}
-            for arg in self.request.arguments:
-                self._arguments[arg] = self.get_argument(arg)
-        return self._arguments
+class TransactionHandler(BaseHandler):
 
     @slack_token_authenticated
     def post(self):
