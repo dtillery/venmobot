@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import json
 import requests
 import time
 

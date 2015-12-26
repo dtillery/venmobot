@@ -10,6 +10,7 @@ import tornado.httpserver
 import tornado.autoreload
 from tornado.options import define, options
 
+from venmobot.handlers.main_handler import MainHandler
 from venmobot.handlers.ping_handler import PingHandler
 from venmobot.handlers.transaction_handler import TransactionHandler
 
@@ -22,6 +23,7 @@ class Application(tornado.web.Application):
 
     def __init__(self):
         routes = [
+            (r"/", MainHandler),
             (r"/ping", PingHandler),
             (r"/transactions", TransactionHandler)
         ]
