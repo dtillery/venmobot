@@ -54,4 +54,7 @@ class TransactionHandler(BaseHandler):
             return self.default_return_info
         else:
             logging.error("Could not handle action '%s'." % action)
-            return self.default_return_info
+            return {
+                "text": "Sorry, I don't know the action \"%s\".  Please check " \
+                        "\"/venmo help\" for a list of availble actions."
+            }
