@@ -47,7 +47,7 @@ class TransactionHandler(BaseHandler):
             v = Venmo(host_uri=self.base_uri)
             auth_url = v.oauth_authorization_endpoint
             return {
-                "text": "Please click <a href='%s'>here</a> in order to authorize " \
+                "text": "Please click <%s|here> in order to authorize " \
                          "Venmobot with Venmo." % auth_url
             }
         elif action == "logout":
