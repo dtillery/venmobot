@@ -55,6 +55,6 @@ class TransactionHandler(BaseHandler):
         else:
             logging.error("Could not handle action '%s'." % action)
             return {
-                "text": "Sorry, I don't know the action \"%s\".  Please check " \
-                        "\"/venmo help\" for a list of availble actions."
+                "text": "Sorry, I don't know the action \"%s\". Please check " \
+                        "\"/venmo help\" for a list of available actions." % action
             }
