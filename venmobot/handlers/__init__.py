@@ -15,4 +15,4 @@ class BaseHandler(RequestHandler):
 
     @property
     def base_uri(self):
-        return "%s//%s" % (self.request.protocol, self.request.host)
+        return "%s://%s" % (self.request.protocol, self.request.host)
