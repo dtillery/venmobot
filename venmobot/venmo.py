@@ -29,3 +29,17 @@ class Venmo(object):
         if state:
             params["state"] = state
         return "%s/oauth/authorize?%s" % (self.base_url, urllib.urlencode(params))
+
+    def get_access_refresh_tokens(self, code):
+        endpoint = "%s/oauth/access_token" % self.base_url
+        params = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "code": code
+        }
+        response = requests.post(endpoint, data=params)
+        if not response.ok:
+            logging.error("Problem with getting Venmo tokens: %s" % response.reason)
+            return None, None
+        response_data = response.json()
+        return response_data.get("access_token"), response_data.get("refresh_token"), response_data.get("expires_in", 0)
