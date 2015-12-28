@@ -4,7 +4,6 @@
 import logging
 import requests
 
-import venmobot.tasks
 from venmobot.auth import slack_token_authenticated
 from venmobot.handlers import BaseHandler
 from venmobot.venmo import Venmo
@@ -18,19 +17,18 @@ class TransactionHandler(BaseHandler):
                  "attempted request."
     }
 
+    help_return_text = """Welcome to Venmobot! Here are the commands I know:
+`/venmo help` Access this help menu
+`/venmo login` Allow Venmobot access to make payments/charges on your behalf (uses OAuth)
+`/venmo logout` Completely remove all information about yourself from Venmobot
+"""
+
     @slack_token_authenticated
     def post(self):
         return_info = self.default_return_info
         action, text = self.process_slack_text(self.arguments.get("text"))
         logging.info("Received '%s' action request from %s" % (action, self.arguments.get("user_name")))
-        if not action:
-            logging.error("No action received.")
-            return_info = {
-                "text": "No action was specified for your request. " \
-                         "Try \"/venmo help\" to see available options."
-             }
-        else:
-            return_info = self.process_action(action, text)
+        return_info = self.process_action(action, text)
 
         self.write(return_info)
 
@@ -41,8 +39,13 @@ class TransactionHandler(BaseHandler):
         return split_text[0], split_text[1]
 
     def process_action(self, action, text):
+        # Return help information
+        if action == "help" or not action:
+            return {
+                "text": self.help_return_text
+            }
         # Create Venmo OAuth login URL and send to slack
-        if action == "login":
+        elif action == "login":
             slack_id = self.arguments.get("user_id")
             user_name = self.arguments.get("user_name")
             if not slack_id:
