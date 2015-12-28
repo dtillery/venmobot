@@ -11,7 +11,7 @@ probably be automated in a script but for now just run this!
 CREATE TABLE users (
     slack_id text PRIMARY KEY,
     user_name text,
-    access_toekn text,
+    access_token text,
     refresh_token text,
     access_expires timestamp
 );
