@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
 import sys
+import urlparse
 
+import psycopg2
 import tornado.ioloop
 import tornado.web
 import tornado.httpserver
@@ -30,6 +33,22 @@ class Application(tornado.web.Application):
         ]
 
         #TODO: somehow ping celery worker so it comes back up at same time?
+
+        urlparse.uses_netloc.append("postgres")
+        env_db_url = os.environ.get("DATABASE_URL")
+        db_url = urlparse.urlparse(env_db_url)
+        try:
+            logging.info("Connecting to DB...")
+            self.db_conn = psycopg2.connect(
+                database=db_url.path[1:],
+                user=db_url.username,
+                password=db_url.password,
+                host=db_url.hostname,
+                port=db_url.port
+            )
+        except psycopg2.OperationalError as ex:
+            logging.error("Problem with connecting to Postgres: %s" % ex)
+            sys.exit(1)
 
         tornado.web.Application.__init__(self, routes)
 
