@@ -43,9 +43,15 @@ class TransactionHandler(BaseHandler):
 
     def process_action(self, action, text):
         if action == "login":
+            slack_id = self.arguments.get("user_id")
+            user_name = self.arguments.get("user_name")
+            if not slack_id:
+                logging.error("No slack_id given for this request: %s" % self.request.arguments)
+                return self.default_return_info
+            # Create Venmo OAuth login URL and send to slack
             logging.info("Generating Venmo OAuth URL...")
             v = Venmo(host_uri=self.base_uri)
-            auth_url = v.oauth_authorization_endpoint
+            auth_url = v.get_oauth_authorization_endpoint("|".join([slack_id, user_name]))
             return {
                 "text": "Please click <%s|here> in order to authorize " \
                          "Venmobot with Venmo." % auth_url
