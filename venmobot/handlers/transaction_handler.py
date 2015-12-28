@@ -3,7 +3,6 @@
 
 import logging
 import requests
-import time
 
 import venmobot.tasks
 from venmobot.auth import slack_token_authenticated
@@ -42,13 +41,13 @@ class TransactionHandler(BaseHandler):
         return split_text[0], split_text[1]
 
     def process_action(self, action, text):
+        # Create Venmo OAuth login URL and send to slack
         if action == "login":
             slack_id = self.arguments.get("user_id")
             user_name = self.arguments.get("user_name")
             if not slack_id:
                 logging.error("No slack_id given for this request: %s" % self.request.arguments)
                 return self.default_return_info
-            # Create Venmo OAuth login URL and send to slack
             logging.info("Generating Venmo OAuth URL...")
             v = Venmo(host_uri=self.base_uri)
             auth_url = v.get_oauth_authorization_endpoint("|".join([slack_id, user_name]))
@@ -56,8 +55,17 @@ class TransactionHandler(BaseHandler):
                 "text": "Please click <%s|here> in order to authorize " \
                          "Venmobot with Venmo." % auth_url
             }
+        # Delete user data from DB by slack_id key
         elif action == "logout":
-            return self.default_return_info
+            logging.info("Removing user %s from database..." % self.arguments.get("user_name"))
+            slack_id = self.arguments.get("user_id")
+            with self.application.db_conn as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("DELETE FROM users WHERE slack_id = %s", (slack_id,))
+            logging.info("Deletion succesful")
+            return {
+                "text": "Your information, including Venmo access tokens, has been succesfully deleted."
+            }
         else:
             logging.error("Could not handle action '%s'." % action)
             return {
