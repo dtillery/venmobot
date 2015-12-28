@@ -21,7 +21,12 @@ Venmobot gets a lot of its configuration from environment variables imported at 
 
 | Setting | Required | Description | Example |
 | ------- | -------- | ----------- | ------- |
+| DATABASE_URL | Yes | URL for Postgres database. Used for storing User information. | postgres://dtillery:mypassword@localhost/venmobot |
+| REDIS_URL | Yes | URL for Redis instance. Used as backend for Celery task manager. | redis://localhost:6379/0 |
 | SLACK_CMD_TOKEN | Yes | Token provided by Slack for a custom Slash Command.  Used to authenticate requests. | rpPdzWtxu3BqDZM8bi4r8yfA |
+| VENMO_CLIENT_ID | Yes | Client ID for Venmo app (see [here](https://developer.venmo.com/gettingstarted/createapp) for more information on creating Venmo apps)| 1234 |
+| VENMO_CLIENT_SECRET | Yes | Client Secret key for Venmo app. | L7gsU3qRTKzZPekYYbvZa9eoQUr9nRpL |
+| VENMO_SANDBOX | No | Controls whether Venmo request are made against the production or sandbox API (see [here](https://developer.venmo.com/resources/sandbox) for documentation) | true |
 
 ### PostgreSQL
 Venmobot requires a PostgreSQL database set up with a 'users' table.  This should
