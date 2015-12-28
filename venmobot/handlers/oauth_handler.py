@@ -27,8 +27,8 @@ class OauthHandler(BaseHandler):
 
         state = self.arguments.get("state")
         slack_id, user_name = state.split("|")
-        if not slack_id:
-            logging.error("No slack_id returned as part of Venmo OAuth.")
+        if not slack_id or not user_name:
+            logging.error("No slack ID and/or Username returned as part of Venmo OAuth.")
             self.write("Looks like something went wrong, please try again later. " \
                        "If the problem persists please contact the Venmobot developers.")
             return
