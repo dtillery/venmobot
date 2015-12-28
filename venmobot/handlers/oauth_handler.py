@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import datetime
 import logging
 
 import psycopg2
@@ -23,6 +24,7 @@ class OauthHandler(BaseHandler):
             self.write("Looks like something went wrong, please try again later. " \
                        "If the problem persists please contact the Venmobot developers.")
             return
+
         state = self.arguments.get("state")
         slack_id, user_name = state.split("|")
         if not slack_id:
@@ -30,8 +32,10 @@ class OauthHandler(BaseHandler):
             self.write("Looks like something went wrong, please try again later. " \
                        "If the problem persists please contact the Venmobot developers.")
             return
+
         v = Venmo()
         access_token, refresh_token, expires_in = v.get_access_refresh_tokens(code)
+
         logging.info("Inserting new user to DB...")
         # insert user into DB based on slack_id
         with self.application.db_conn as conn:
@@ -40,13 +44,13 @@ class OauthHandler(BaseHandler):
                     insert_info = {
                         "slack_id": slack_id,
                         "user_name": user_name,
-                        "expires_in": expires_in,
+                        "expires_in": datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_in),
                         "access_token": access_token,
                         "refresh_token": refresh_token
                     }
                     cursor.execute("INSERT INTO users (slack_id, user_name, access_token, refresh_token, access_expires) " \
-                                   "VALUES ('%(slack_id)s', '%(user_name)s', '%(access_token)s', '%(refresh_token)s', now() + INTERVAL '%(expires_in)i seconds')"
-                                    % insert_info)
+                                   "VALUES (%(slack_id)s, %(user_name)s, %(access_token)s, %(refresh_token)s, %(expires_in)s)",
+                                    insert_info)
                 except psycopg2.IntegrityError as ex:
                     logging.error("Could not insert User %s: %s" % (insert_info.get("user_name"), ex))
                     self.write("We had a problem logging you in. Did you already " \
