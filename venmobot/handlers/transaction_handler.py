@@ -89,7 +89,7 @@ class TransactionHandler(BaseHandler):
 
     def handle_pay(self, user_id, text):
         # text should of form "@[slackuser] [amount] [description]", ie. "@dtillery 10 for food"
-        logging.info("Received pay request.")
+        logging.info("Checking that all required pay info is present and valid...")
         try:
             slack_user, amount, description = text.split(" ", 2)
         except ValueError:
@@ -116,5 +116,5 @@ class TransactionHandler(BaseHandler):
         # start pay task
         pay.delay(user_id, slack_user, amount, description)
         logging.info("Pay task sent successfully.")
-        return "Thanks for the request! I will try to pay %s $%f momentarily, " \
-               "and let you know how it goes!"
+        return "Thanks for the request! I will try to pay %s $%.2f shortly " \
+               "and let you know how it goes!" % (slack_user, amount)
