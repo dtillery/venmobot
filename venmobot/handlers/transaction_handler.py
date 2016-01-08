@@ -6,6 +6,7 @@ import requests
 
 from venmobot.auth import slack_token_authenticated
 from venmobot.handlers import BaseHandler
+from venmobot.tasks import pay
 from venmobot.venmo import Venmo
 
 
@@ -44,6 +45,7 @@ class TransactionHandler(BaseHandler):
             return {
                 "text": self.help_return_text
             }
+
         # Create Venmo OAuth login URL and send to slack
         elif action == "login":
             slack_id = self.arguments.get("user_id")
@@ -58,6 +60,7 @@ class TransactionHandler(BaseHandler):
                 "text": "Please click <%s|here> in order to authorize " \
                          "Venmobot with Venmo." % auth_url
             }
+
         # Delete user data from DB by slack_id key
         elif action == "logout":
             logging.info("Removing user %s from database..." % self.arguments.get("user_name"))
@@ -69,9 +72,49 @@ class TransactionHandler(BaseHandler):
             return {
                 "text": "Your information, including Venmo access tokens, has been succesfully deleted."
             }
+
+        # Handle pay action
+        elif action == "pay":
+            user_id = self.arguments.get("user_id")
+            return_text = self.handle_pay(user_id, text)
+            return {"text": return_text}
+
+        # Could not handle action
         else:
             logging.error("Could not handle action '%s'." % action)
             return {
                 "text": "Sorry, I don't know the action \"%s\". Please check " \
                         "\"/venmo help\" for a list of available actions." % action
             }
+
+    def handle_pay(self, user_id, text):
+        # text should of form "@[slackuser] [amount] [description]", ie. "@dtillery 10 for food"
+        logging.info("Received pay request.")
+        try:
+            slack_user, amount, description = text.split(" ", 2)
+        except ValueError:
+            logging.error("Improperly formatted pay text: '%s'" % text)
+            return "Sorry, I couldn't parse that request. Please refer to " \
+                        "\"/venmo help\" for pay usage info."
+        else:
+            if not (slack_user and amount and description):
+                return "You must provide a user, amount and description with your request. " \
+                        "Please refer to \"/venmo help\" for pay usage info."
+        # if not a valid float, return error immediately
+        try:
+            amount = amount.replace("$", "")
+            amount = float(amount)
+        except ValueError:
+            logging.error("Could not convert amount '%s' to float." % amount)
+            return "Sorry, %s is not an amount I can use.  Please refer to " \
+                    "\"/venmo help\" for pay usage info." % amount
+        else:
+            # do not allow negative numbers, people might end up charging instead
+            if amount <= 0:
+                logging.error("Amount %f is a negative number." % amount)
+                return "You can't pay with a number less than zero (%f)!" % amount
+        # start pay task
+        pay.delay(user_id, slack_user, amount, description)
+        logging.info("Pay task sent successfully.")
+        return "Thanks for the request! I will try to pay %s $%f momentarily, " \
+               "and let you know how it goes!"
