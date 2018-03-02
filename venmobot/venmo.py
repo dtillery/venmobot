@@ -43,3 +43,6 @@ class Venmo(object):
             return None, None
         response_data = response.json()
         return response_data.get("access_token"), response_data.get("refresh_token"), response_data.get("expires_in", 0)
+
+    def pay(self):
+        pass
